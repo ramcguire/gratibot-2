@@ -39,9 +39,13 @@ module.exports = (bot) ->
             msg.reply "Whoops, not enough info! " +
               "Please provide more details why you are giving #{gratibotEmoji}"
 
+        # Calculate how many fistbumps should be awarded to each recipient
+        rec.calcRecognitionsAwarded()
+
         # check recognition count
         recLeftToGive = RecognitionStore.recognitionsLeftToday bot, rec.sender
-        if recLeftToGive < rec.recipients.length
+        desiredAmount = rec.recipients.length * rec.recognitionFactor
+        if recLeftToGive < desiredAmount
             msg.reply "Sorry you can't do that. You have #{recLeftToGive} #{gratibotEmoji} left to give today."
 
         # Message meets requirements, make reccomendation
@@ -57,4 +61,4 @@ module.exports = (bot) ->
 
             # Reply to sender
             bot.messageRoom rec.sender.name, "Your recognition has been sent! " +
-                "Well done! You have #{recLeftToGive} #{gratibotEmoji} left to give today"
+                "Well done! You have #{recLeftToGive - desiredAmount} #{gratibotEmoji} left to give today"

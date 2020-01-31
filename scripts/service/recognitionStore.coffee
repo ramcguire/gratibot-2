@@ -9,25 +9,26 @@ class RecognitionStore
         bot.brain.data.recognitionsRecieved ||= {}
         bot.brain.data.recognitionsGiven ||= {}
         for recipient in rec.recipients
-            recognitionRecord =
-              sender: rec.sender.name
-              recipients: rec.recipients
-              message: rec.message
-              timestamp: rec.timestamp
-            winston.debug("recognitonRecord: #{recognitionRecord}")
+            for f in [1..rec.recognitionFactor]
+                recognitionRecord =
+                  sender: rec.sender.name
+                  recipients: rec.recipients
+                  message: rec.message
+                  timestamp: rec.timestamp
+                winston.debug("recognitonRecord: #{recognitionRecord}")
 
-            winston.debug "#{recipient} is receiving recogniton"
+                winston.debug "#{recipient} is receiving recogniton"
 
-            # Initialize list if empty
-            bot.brain.data.recognitionsRecieved[recipient] ||= []
+                # Initialize list if empty
+                bot.brain.data.recognitionsRecieved[recipient] ||= []
 
-            # Create recognition
-            bot.brain.data.recognitionsRecieved[recipient].push recognitionRecord
-            winston.debug "Created recog"
+                # Create recognition
+                bot.brain.data.recognitionsRecieved[recipient].push recognitionRecord
+                winston.debug "Created recog"
 
-            bot.brain.data.recognitionsGiven[rec.sender.name] ||= []
-            bot.brain.data.recognitionsGiven[rec.sender.name].push recognitionRecord.timestamp
-            winston.debug("Rec given: #{bot.brain.data.recognitionsGiven[rec.sender.name].length}")
+                bot.brain.data.recognitionsGiven[rec.sender.name] ||= []
+                bot.brain.data.recognitionsGiven[rec.sender.name].push recognitionRecord.timestamp
+                winston.debug("Rec given: #{bot.brain.data.recognitionsGiven[rec.sender.name].length}")
 
     @totalRecognitionRecieved: (bot, user) ->
         bot.brain.data.recognitionsRecieved ||= {}
