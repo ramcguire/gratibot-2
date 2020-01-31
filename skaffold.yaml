@@ -1,0 +1,19 @@
+apiVersion: skaffold/v1beta12
+kind: Config
+build:
+  artifacts:
+  - image: gratibot2
+    context: .
+deploy:
+  helm:
+    flags:
+      upgrade: ["--timeout", "600", "--namespace", "toolchain"]
+      install: ["--timeout", "600", "--namespace", "toolchain"]
+    releases:
+    - name: gratibot2
+      chartPath: charts/gratibot2
+      values:
+        gratibot2.image: gratibot2
+      setValueTemplates:
+        istioDomain: "{{.ISTIO_DOMAIN}}"
+        mongodbUri: "gratibot2-db/gratibot2"

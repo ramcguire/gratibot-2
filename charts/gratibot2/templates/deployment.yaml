@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gratibot2
+  labels:
+    chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  selector:
+    matchLabels:
+      app: gratibot2
+  template:
+    metadata:
+      labels:
+        app: gratibot2
+    spec:
+      containers:
+      - name: gratibot2
+        image: "{{ .Values.gratibot2.image }}"
+        ports:
+          - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "10m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+          - MYSQL_URL=mysql://root:password@mysql/bob
+          - name: MATTERMOST_HOST
+            valueFrom:
+              secretKeyRef:
+                name: gratibot2
+                key: mm_host
+          - name: MATTERMOST_GROUP
+            valueFrom:
+              secretKeyRef:
+                name: gratibot2
+                key: mm_group
+          - name: MATTERMOST_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gratibot2
+                key: token
