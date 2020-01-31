@@ -40,11 +40,9 @@ module.exports = (bot) ->
               "Please provide more details why you are giving #{gratibotEmoji}"
 
         # check recognition count
-        todaysRecognitionCount = RecognitionStore.countRecognitionsGivenSince bot, rec.sender, 1
-        attemptedCount = todaysRecognitionCount + rec.recipients.length
-        winston.debug("ATTEMPTED COUNT: #{attemptedCount}")
-        if attemptedCount > 5
-            msg.reply "Sorry you can't do that. You've already given #{todaysRecognitionCount} #{gratibotEmoji} today."
+        recLeftToGive = RecognitionStore.recognitionsLeftToday bot, rec.sender
+        if recLeftToGive < rec.recipients.length
+            msg.reply "Sorry you can't do that. You have #{recLeftToGive} #{gratibotEmoji} left to give today."
 
         # Message meets requirements, make reccomendation
         else
@@ -59,4 +57,4 @@ module.exports = (bot) ->
 
             # Reply to sender
             bot.messageRoom rec.sender.name, "Your recognition has been sent! " +
-                "Well done! You have #{5 - attemptedCount} #{gratibotEmoji} left to give today"
+                "Well done! You have #{recLeftToGive} #{gratibotEmoji} left to give today"

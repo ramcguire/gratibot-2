@@ -2,8 +2,11 @@ moment = require 'moment-timezone'
 winston = require "../config/winston"
 
 class RecognitionStore
+
+    @maxRecognitionsPerDay = 5
+
     @giveRecognition: (bot, rec) ->
-        bot.brain.data.recognitions ||= {}
+        bot.brain.data.recognitionsRecieved ||= {}
         bot.brain.data.recognitionsGiven ||= {}
         for recipient in rec.recipients
             recognitionRecord =
@@ -16,19 +19,27 @@ class RecognitionStore
             winston.debug "#{recipient} is receiving recogniton"
 
             # Initialize list if empty
-            bot.brain.data.recognitions[recipient] ||= []
+            bot.brain.data.recognitionsRecieved[recipient] ||= []
 
             # Create recognition
-            bot.brain.data.recognitions[recipient].push recognitionRecord
+            bot.brain.data.recognitionsRecieved[recipient].push recognitionRecord
             winston.debug "Created recog"
 
             bot.brain.data.recognitionsGiven[rec.sender.name] ||= []
             bot.brain.data.recognitionsGiven[rec.sender.name].push recognitionRecord.timestamp
             winston.debug("Rec given: #{bot.brain.data.recognitionsGiven[rec.sender.name].length}")
 
-    @countRecognitionsRecieved: (bot, user, days) ->
-        bot.brain.data.recognitions[user] ||= []
-        return bot.brain.data.recognitions[user].length # FIX THIS
+    @totalRecognitionRecieved: (bot, user) ->
+        bot.brain.data.recognitionsRecieved ||= {}
+        bot.brain.data.recognitionsRecieved[user.name] ||= []
+        if bot.brain.data.recognitionsRecieved[user.name]
+          return bot.brain.data.recognitionsRecieved[user.name].length
+        return 0
+
+    @countRecognitionsRecievedSince: (bot, user, days) ->
+        bot.brain.data.recognitionsGiven ||= {}
+        bot.brain.data.recognitionsGivern[user.name] ||= []
+        return bot.brain.data.recognitionsRecieved[user.name].length
 
     @countRecognitionsGivenSince: (bot, sender, days) ->
         count = 0
@@ -49,5 +60,12 @@ class RecognitionStore
                 if recTime >= startDate
                     count += 1
         count
+
+    @recognitionsLeftToday: (bot, user) ->
+        todaysRecognitionCount = RecognitionStore.countRecognitionsGivenSince bot, user, 1
+        winston.debug "Today's count: #{todaysRecognitionCount}"
+
+        total = @maxRecognitionsPerDay - todaysRecognitionCount
+        return total
 
 module.exports = RecognitionStore
