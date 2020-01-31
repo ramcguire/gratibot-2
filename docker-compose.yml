@@ -1,0 +1,13 @@
+version: '3'
+services:
+
+  gratibot-2:
+    build: .
+    container_name: "gratibot-2"
+    ports:
+      - 8080:8080
+    environment:
+      - MATTERMOST_USE_TLS
+      - MATTERMOST_HOST
+      - MATTERMOST_GROUP
+      - MATTERMOST_ACCESS_TOKEN
