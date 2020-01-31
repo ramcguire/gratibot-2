@@ -12,6 +12,7 @@ Recognition = require "./recognition"
 RecognitionStore = require "./service/recognitionStore"
 
 module.exports = (bot) ->
+    recognitionStore = new RecognitionStore(bot)
 
     gratibotEmoji = ':fistbump:'
 
@@ -43,7 +44,7 @@ module.exports = (bot) ->
         rec.calcRecognitionsAwarded()
 
         # check recognition count
-        recLeftToGive = RecognitionStore.recognitionsLeftToday bot, rec.sender
+        recLeftToGive = recognitionStore.recognitionsLeftToday bot, rec.sender
         desiredAmount = rec.recipients.length * rec.recognitionFactor
         if recLeftToGive < desiredAmount
             msg.reply "Sorry you can't do that. You have #{recLeftToGive} #{gratibotEmoji} left to give today."
@@ -53,7 +54,7 @@ module.exports = (bot) ->
             winston.info("Valid recognition, #{rec.sender.name} awarding recpient(s)")
 
             # Store recognition in brain
-            RecognitionStore.giveRecognition(bot, rec)
+            recognitionStore.giveRecognition(bot, rec)
 
             # Send recognition notification to receipients
             for r in rec.recipients
