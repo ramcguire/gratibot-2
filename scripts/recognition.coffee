@@ -37,20 +37,4 @@ class Recognition
         description = msgText.replace(@emojiRegEx, '').replace(@userRegex, '')
         (description.length > @minLength)
 
-    # Message for no recognizable users in message
-    #noRecipientsSpecifiedReply: ->
-
-    # Message for user who tried to award themeselves
-    selfReferenceReply: ->
-        "Nice try `#{@sender.name}`, but you can't toot your own horn!"
-
-    increaseMessageLengthReply: ->
-        "Whoops, not enough info!" +
-        "Please provide more details why you are giving :fistbump:"
-
-    # Message for successful recogition
-    sentRecognitionReply: ->
-        "Your recognition has been sent to #{@recipients}." +
-        "Well done! You have [] left to give today"
-
 module.exports = Recognition

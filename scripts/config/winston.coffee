@@ -1,4 +1,4 @@
-winston = require('winston')
+winston = require 'winston'
 
 loggingLevel = process.env.LOGGING_LEVEL or 'info'
 

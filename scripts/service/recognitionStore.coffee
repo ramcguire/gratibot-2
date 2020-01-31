@@ -1,50 +1,53 @@
+moment = require 'moment-timezone'
 winston = require "../config/winston"
 
 class RecognitionStore
     @giveRecognition: (bot, rec) ->
         bot.brain.data.recognitions ||= {}
-        console.log(rec)
+        bot.brain.data.recognitionsGiven ||= {}
         for recipient in rec.recipients
-            r =
-              sender: rec.sender.id
+            recognitionRecord =
+              sender: rec.sender.name
               recipients: rec.recipients
               message: rec.message
               timestamp: rec.timestamp
+            winston.debug("recognitonRecord: #{recognitionRecord}")
 
             winston.debug "#{recipient} is receiving recogniton"
-            recId = bot.brain.usersForFuzzyName(recipient)
-            if recId.length is 1
-              # Initialize list if empty
-              bot.brain.data.recognitions[recId[0].id] ||= []
 
-              # Create recognition
-              bot.brain.data.recognitions[recId[0].id].push r
-              winston.debug "Created recog"
+            # Initialize list if empty
+            bot.brain.data.recognitions[recipient] ||= []
 
-    @countRecognitionsRecieved: (bot, user, timezone = null, days = null) ->
-        bot.brain.data.recognitions[user.id] ||= []
-        return bot.brain.data.recognitions[user.id].length
+            # Create recognition
+            bot.brain.data.recognitions[recipient].push recognitionRecord
+            winston.debug "Created recog"
 
-    # @countRecognitionsGiven: (bot, user, timezone, days) ->
-    #     count = 0
+            bot.brain.data.recognitionsGiven[rec.sender.name] ||= []
+            bot.brain.data.recognitionsGiven[rec.sender.name].push recognitionRecord.timestamp
+            winston.debug("Rec given: #{bot.brain.data.recognitionsGiven[rec.sender.name].length}")
 
-    #     if timezone and days
-    #         userDate = moment(Date.now()).tz(timezone)
-    #         midnight = userDate.startOf('day')
-    #         midnight = midnight.subtract(days - 1, 'days')
+    @countRecognitionsRecieved: (bot, user, days) ->
+        bot.brain.data.recognitions[user] ||= []
+        return bot.brain.data.recognitions[user].length # FIX THIS
 
-    #         for i of bot.brain.data.recognitions
-    #             for j in bot.brain.data.recognitions[i]
-    #                 if user.id is j.sender
-    #                     if j.timestamp >= midnight
-    #                         count += 1
+    @countRecognitionsGivenSince: (bot, sender, days) ->
+        count = 0
+        curDate = moment(Date.now()).tz('America/Los_Angeles')
 
-    #     else
-    #         for i of bot.brain.data.recognitions
-    #             for j in bot.brain.data.recognitions[i]
-    #                 if user.id is j.sender
-    #                     count += 1
+        startDate = moment(curDate).startOf('day')
+        startDate = startDate.subtract(days, 'days')
 
-    #     return count
+        winston.debug("User Date: #{curDate}")
+        winston.debug("Start Date: #{startDate}")
+
+
+        bot.brain.data.recognitionsGiven ||= {}
+        bot.brain.data.recognitionsGiven[sender.name] ||= []
+        if bot.brain.data.recognitionsGiven[sender.name]
+            for recTime in bot.brain.data.recognitionsGiven[sender.name]
+                winston.debug("RecTime: #{recTime}")
+                if recTime >= startDate
+                    count += 1
+        count
 
 module.exports = RecognitionStore
