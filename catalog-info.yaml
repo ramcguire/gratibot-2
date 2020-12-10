@@ -2,9 +2,10 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: gratibot-2
+  description: Slack bot for expressing and keeping track of gratitude
   annotations:
     github.com/project-slug: ramcguire/gratibot-2
 spec:
-  type: other
-  lifecycle: unknown
-  owner: team-a
+  type: service
+  lifecycle: production
+  owner: group:team-a
