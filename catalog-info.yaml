@@ -5,7 +5,8 @@ metadata:
   description: Slack bot for expressing and keeping track of gratitude
   annotations:
     github.com/project-slug: ramcguire/gratibot-2
+    backstage.io/techdocs-ref: dir:./
 spec:
   type: service
   lifecycle: production
-  owner: user:ryan.mcguire
+  owner: team-a

@@ -1,0 +1,8 @@
+site_name: 'gratibot-2 Documentation'
+
+nav:
+  - Home: index.md
+  - About: about.md
+
+plugins:
+  - techdocs-core
